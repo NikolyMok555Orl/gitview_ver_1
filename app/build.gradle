@@ -32,12 +32,12 @@ android {
 
     flavorDimensions "githubVar"
     productFlavors {
-        animalHorse {
+        all_user {
             dimension "githubVar"
             applicationId "com.example.githubview.all"
-            versionNameSuffix "-all"
+            versionNameSuffix "-all_user"
         }
-        animalFish {
+        not_user {
             dimension "githubVar"
             applicationId "com.example.githubview.not_user"
             versionNameSuffix "-not_user"
