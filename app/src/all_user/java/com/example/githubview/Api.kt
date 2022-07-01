@@ -1,4 +1,4 @@
-package com.example.githubview
+package com.example.githubview.all_user
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -7,7 +7,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 interface Api {
-
 
 
 
