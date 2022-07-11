@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/allRepositoryFragment"
-        android:name="com.example.githubview.ui.AllRepositoryFragment"
+        android:name="com.example.githubview.ui.view.AllRepositoryFragment"
         android:label="f_all_repository"
         tools:layout="@layout/f_all_repository" />
     <fragment
         android:id="@+id/aboutProgramFragment"
-        android:name="com.example.githubview.ui.AboutProgramFragment"
+        android:name="com.example.githubview.ui.view.AboutProgramFragment"
         android:label="f_about_program"
         tools:layout="@layout/f_about_program" />
 </navigation>

@@ -1,21 +1,34 @@
 package com.example.githubview
 
+import com.example.githubview.data.model.api.JsRepositories
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
+import retrofit2.http.Url
 import java.util.concurrent.TimeUnit
 
 interface Api {
 
 
 
+    @GET("search/repositories")
+    suspend fun searchRepositories(@Query("q") q: String): JsRepositories
 
+
+    @GET
+    suspend fun getLanguages(@Url url: String):Map<String, Int>
+
+    /*@GET("search/repositories")
+    fun searchRepositories(@Query("query") q: String): Call<JsRepositories>*/
 
 
     companion object {
 
-        private const val URL = "api.github.com/"
+        private const val URL = "https://api.github.com/"
 
         private var api: Api? = null
 

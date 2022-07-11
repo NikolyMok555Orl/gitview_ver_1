@@ -1,4 +1,4 @@
-package com.example.githubview.ui
+package com.example.githubview.ui.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,8 +14,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.githubview.R
+import com.example.githubview.data.MainRepository
 import com.example.githubview.databinding.FAboutProgramBinding
 import com.example.githubview.ui.theme.AppTheme
+import com.example.githubview.ui.viewmodel.MainViewModelFactory
 
 
 class AboutProgramFragment : Fragment() {
@@ -34,6 +36,8 @@ class AboutProgramFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
         binding.composeView.setContent {
             AppTheme {
                 AboutProgram()
@@ -47,7 +51,7 @@ class AboutProgramFragment : Fragment() {
     @Composable
     fun AboutProgram(modifier: Modifier=Modifier){
         Box(modifier=modifier, contentAlignment= Alignment.Center){
-            Text(text= stringResource(R.string.app_name))
+            Text(text= "Программа "+stringResource(R.string.app_name))
 
         }
 

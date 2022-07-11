@@ -1,4 +1,4 @@
-package com.example.githubview.api
+package com.example.githubview.data.model.api
 
 class JsRepositories {
     var total_count=0
@@ -7,6 +7,7 @@ class JsRepositories {
 
 
 class JsRepository{
+    var id=0
     var full_name=""
     var name=""
     var description=""
@@ -14,10 +15,7 @@ class JsRepository{
     var languages_url=""
     var updated_at=""
     var stargazers_count=0
-    var owner=object {
-        var avatar_url=""
-    }
-
+    var owner=JsOwner()
 
 
 }
