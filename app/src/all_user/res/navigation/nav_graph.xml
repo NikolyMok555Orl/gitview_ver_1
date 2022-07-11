@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/allRepositoryWithUserFragment">
+
+    <fragment
+        android:id="@+id/aboutProgramFragment"
+        android:name="com.example.githubview.ui.view.AboutProgramFragment"
+        android:label="f_about_program"
+        tools:layout="@layout/f_about_program" />
+    <fragment
+        android:id="@+id/userFragment"
+        android:name="com.example.githubview.ui.view.UserFragment"
+        android:label="UserFragment" >
+        <argument
+            android:name="user"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/allRepositoryWithUserFragment"
+        android:name="com.example.githubview.ui.view.AllRepositoryWithUserFragment"
+        android:label="AllRepositoryWithUserFragment" >
+        <action
+            android:id="@+id/action_allRepositoryWithUserFragment_to_userFragment"
+            app:destination="@id/userFragment" />
+    </fragment>
+</navigation>

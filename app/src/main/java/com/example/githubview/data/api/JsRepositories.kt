@@ -10,7 +10,7 @@ class JsRepository{
     var id=0
     var full_name=""
     var name=""
-    var description=""
+    var description:String?=""
     var language=""
     var languages_url=""
     var updated_at=""

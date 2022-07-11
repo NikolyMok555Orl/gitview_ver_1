@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -43,12 +44,12 @@ import com.example.githubview.utils.Status
 import java.util.*
 
 
-class AllRepositoryFragment : Fragment() {
+open class AllRepositoryFragment : Fragment() {
 
-    private var _binding: FAllRepositoryBinding? = null
-    private val binding get() = _binding!!
+    protected var _binding: FAllRepositoryBinding? = null
+    protected val binding get() = _binding!!
 
-    private lateinit var mainViewModel: MainViewModel
+    protected lateinit var mainViewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FAllRepositoryBinding.inflate(inflater, container, false)
@@ -65,48 +66,52 @@ class AllRepositoryFragment : Fragment() {
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 mainViewModel.search(query ?: "")
-                return false
+                return true
             }
 
             override fun onQueryTextChange(query: String?): Boolean {
-                return false
+                return true
             }
-
-
         })
-
         binding.composeView.setContent {
             AppTheme {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    val reviews = mainViewModel.repositorise.observeAsState()
-                    reviews.value?.let {
-                        when (it.status) {
-                            Status.LOADING -> {
-                                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                                    CircularProgressIndicator()
-                                }
-                            }
-                            Status.SUCCESS -> {
-                                Items(it.data?.items?: emptyList())
-                            }
-                            else -> {
-                                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(text = it.message ?: "Неизвестная ошибка")
-                                }
-                            }
-                        }
-                        
-                        
-                    }
-                   
-
-
-                   
-                }
+                AllRepository()
             }
 
         }
 
+    }
+
+    @Composable
+    fun AllRepository() {
+        Column(modifier = Modifier.fillMaxSize()) {
+            val reviews = mainViewModel.repositorise.observeAsState()
+            reviews.value?.let {
+                when (it.status) {
+                    Status.LOADING -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+                    Status.SUCCESS -> {
+                        Items(it.data?.items ?: emptyList())
+                    }
+                    else -> {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = it.message ?: "Неизвестная ошибка")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Composable
@@ -114,18 +119,23 @@ class AllRepositoryFragment : Fragment() {
         val lazyListState: LazyListState = rememberLazyListState()
         LazyColumn(modifier = modifier, state = lazyListState) {
             items(items = repositories, key = { it.id }) { repository ->
-                Item(repository)
+                StateItem(repository, modifier)
             }
         }
     }
 
     @Composable
-    fun Item(repository: Repository, modifier: Modifier=Modifier){
+    open fun StateItem(repository: Repository, modifier: Modifier=Modifier){
+        Item(repository, { navToUser() }, modifier)
+    }
+
+    @Composable
+    fun Item(repository: Repository, onClick: ()->Unit, modifier: Modifier=Modifier){
         Card(
             modifier
                 .fillMaxWidth()
                 .padding(5.dp)
-                .clickable(onClick = { }),
+                .clickable(onClick = { onClick() }),
             elevation = 5.dp
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -156,4 +166,9 @@ class AllRepositoryFragment : Fragment() {
         }
     }
 
+
+    protected open fun navToUser(){
+        Toast.makeText( requireContext(),"В этой версии не доступно просмотр пользователя",
+            Toast.LENGTH_SHORT).show()
+    }
 }

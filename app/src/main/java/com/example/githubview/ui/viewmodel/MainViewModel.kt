@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
+open class MainViewModel(private val mainRepository: MainRepository) : ViewModel() {
 
     val repositorise: MutableLiveData<Resource<Repositories>> by lazy { MutableLiveData<Resource<Repositories>>(null) }
 

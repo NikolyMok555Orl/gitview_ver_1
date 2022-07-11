@@ -1,32 +1,29 @@
 package com.example.githubview.all_user
 
+import com.example.githubview.Api
+import com.example.githubview.all_user.api.JsUser
+import com.example.githubview.data.model.api.JsRepositories
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
-interface Api {
+interface Api:com.example.githubview.Api {
 
 
-
+    @GET("users/{user}")
+    suspend fun getUser(@Path("user") user: String): JsUser
 
 
     companion object {
 
-        private const val URL = "api.github.com/"
+        private const val URL = "https://api.github.com/"
 
-        private var api: Api? = null
-
-        fun getUrlGetArrayString(input: List<Int>?): String? {
-            input?.let {
-                if (it.isEmpty())
-                    return null
-                else
-                    return "${it.toString().replace(" ", "")}"
-            }
-            return null
-        }
+        private var api: com.example.githubview.all_user.Api? = null
 
         private fun createApi() {
             val interceptor : HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
@@ -44,15 +41,14 @@ interface Api {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build()
-            api = retrofit.create(Api::class.java)
+            api = retrofit.create(com.example.githubview.all_user.Api::class.java)
         }
 
-        fun get(): Api {
+        fun get(): com.example.githubview.all_user.Api {
             if (api == null)
                 createApi()
             return api!!
         }
     }
-
 
 }

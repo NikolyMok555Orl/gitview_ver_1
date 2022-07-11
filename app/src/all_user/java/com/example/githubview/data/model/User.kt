@@ -1,11 +1,26 @@
 package com.example.githubview.data.model
 
-class User {
+import com.example.githubview.all_user.api.JsUser
 
+class User {
+    var id=0
     var name=""
     var bio=""
     var avatar_url=""
     var blog=""
-    var follower=0
+    var followers=0
     var following=0
+    /**Для превью*/
+    constructor(){}
+
+
+    constructor(jsUser: JsUser){
+        id=jsUser.id
+        name=jsUser.login
+        bio=jsUser.avatar_url
+        blog=jsUser.blog
+        followers=jsUser.followers
+        following=jsUser.following
+        avatar_url=jsUser.avatar_url
+    }
 }
