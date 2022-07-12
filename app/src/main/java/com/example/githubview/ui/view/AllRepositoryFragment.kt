@@ -17,17 +17,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.activityViewModels
@@ -35,12 +37,15 @@ import androidx.lifecycle.ViewModelProvider
 import coil.compose.AsyncImage
 import com.example.githubview.R
 import com.example.githubview.data.MainRepository
+import com.example.githubview.data.model.Repositories
 import com.example.githubview.data.model.Repository
 import com.example.githubview.databinding.FAllRepositoryBinding
 import com.example.githubview.ui.theme.AppTheme
 import com.example.githubview.ui.viewmodel.MainViewModel
 import com.example.githubview.ui.viewmodel.MainViewModelFactory
 import com.example.githubview.utils.Status
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import java.util.*
 
 
@@ -75,16 +80,17 @@ open class AllRepositoryFragment : Fragment() {
         })
         binding.composeView.setContent {
             AppTheme {
-                AllRepository()
+                MainScreen()
             }
 
         }
 
     }
 
+
     @Composable
-    fun AllRepository() {
-        Column(modifier = Modifier.fillMaxSize()) {
+    fun MainScreen(modifier: Modifier=Modifier){
+        Column(modifier = modifier.fillMaxSize()) {
             val reviews = mainViewModel.repositorise.observeAsState()
             reviews.value?.let {
                 when (it.status) {
@@ -98,7 +104,10 @@ open class AllRepositoryFragment : Fragment() {
                         }
                     }
                     Status.SUCCESS -> {
+                        Text("Найденно: ${mainViewModel.countRepositoryAll}")
                         Items(it.data?.items ?: emptyList())
+
+
                     }
                     else -> {
                         Column(
@@ -111,8 +120,11 @@ open class AllRepositoryFragment : Fragment() {
                     }
                 }
             }
+
         }
     }
+
+
 
     @Composable
     fun Items(repositories: List<Repository>,modifier: Modifier=Modifier){
@@ -120,6 +132,13 @@ open class AllRepositoryFragment : Fragment() {
         LazyColumn(modifier = modifier, state = lazyListState) {
             items(items = repositories, key = { it.id }) { repository ->
                 StateItem(repository, modifier)
+            }
+            if(mainViewModel.countPage>1) {
+                item {
+                    PaggingPage(
+                        mainViewModel.countPage, mainViewModel.page.value ?: 1,
+                    )
+                }
             }
         }
     }
@@ -151,18 +170,55 @@ open class AllRepositoryFragment : Fragment() {
                     }
                 }
                 Text(text=repository.description)
+                val composableScope = rememberCoroutineScope()
+                val mutableState = remember { mutableStateOf("") }
+                if(repository.languages.isEmpty()){
+                    composableScope.launch() {
+                        mutableState.value=repository.getLanguages()
+                    }
+                }
+                Text(text = "ЯП ${mutableState.value}")
 
-                Text(text=repository.languages.joinToString())
                 Text(text=repository.updated_at)
             }
         }
     }
+
+
+    @Composable
+    fun PaggingPage(countAll:Int, page:Int,  modifier: Modifier=Modifier){
+        Row(modifier = modifier.fillMaxWidth(), horizontalArrangement=Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically) {
+            TextButton(onClick = { mainViewModel.startRepository() }, enabled = page>1) {
+                Text("Начало")
+            }
+            TextButton(onClick = { mainViewModel.previousRepository() }, enabled = page>1) {
+                Text("Предыдущие")
+            }
+            Text(text=page.toString(), style = MaterialTheme.typography.h5 )
+            TextButton(onClick = { mainViewModel.nextRepository() }, enabled = page<countAll) {
+                Text("Следущие")
+            }
+            TextButton(onClick = { mainViewModel.finishRepository() }, enabled = page<countAll) {
+                Text("Конец")
+            }
+        }
+    }
+
 
     @Preview(showBackground = true)
     @Composable
     fun PreviewItem(){
         AppTheme() {
             //Item()
+        }
+    }
+
+    @Preview(showBackground = true)
+    @Composable
+    fun PreviewPaggingPage(){
+        AppTheme() {
+            PaggingPage(25, 2)
         }
     }
 

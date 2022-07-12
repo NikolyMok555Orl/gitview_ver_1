@@ -1,11 +1,19 @@
 package com.example.githubview.data.model
 
+import com.example.githubview.Api
 import com.example.githubview.data.model.api.JsRepository
+import com.example.githubview.utils.Resource
 
 
 class Repositories{
     var total_count=0
     var items:List<Repository> = emptyList()
+
+    companion object{
+
+        val per_page=10
+
+    }
 }
 
 
@@ -15,21 +23,33 @@ class Repository {
     var nameOwner=""
     var description=""
     var languages: List<String> = emptyList()
+    var languages_url: String=""
     var updated_at=""
     var avatar_url=""
     var stargazers_count=0
 
 
 
-    constructor(jsRepository: JsRepository, languages: List<String>){
+    constructor(jsRepository: JsRepository){
         id=jsRepository.id
         full_name=jsRepository.full_name
         description=jsRepository.description?:""
         updated_at=jsRepository.updated_at
         avatar_url=jsRepository.owner.avatar_url
         stargazers_count=jsRepository.stargazers_count
-        this.languages=languages
+        languages_url=jsRepository.languages_url
         nameOwner=jsRepository.owner.login
     }
 
+
+    suspend fun getLanguages(): String{
+       if(languages.isNotEmpty()) return languages.joinToString()
+         return try {
+           val res=  Resource.success(data = Api.get().getLanguages(url=languages_url).keys.toList())
+             languages=res.data?: emptyList()
+             languages.joinToString()
+        } catch (exception: Exception) {
+            "Ошибка при загрузки"
+        }
+    }
 }
