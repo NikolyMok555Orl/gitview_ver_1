@@ -5,16 +5,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
@@ -73,7 +78,6 @@ class UserFragment :Fragment(R.layout.f_user){
                                 it.data?.let {
                                     user->UserView(user)
                                 }
-
                             }
                             else -> {
                                 Column(
@@ -95,21 +99,43 @@ class UserFragment :Fragment(R.layout.f_user){
 
     @Composable
     fun UserView(user: User,modifier: Modifier=Modifier){
-        Column(modifier=modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center) {
-            Row(modifier=modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center){
-                AsyncImage(model = user.avatar_url, contentDescription = "Аватар", modifier=Modifier.size(100.dp))
-                Text(text = "${user.followers}, ${user.following}")
-
-            }
-            Text(text = user.name)
-            Text(text = user.bio)
-            Row() {
-                Text(text = user.blog)
-                Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_baseline_launch_24), contentDescription = "Ссылка")
+        Surface( modifier = modifier
+            .fillMaxSize().padding(10.dp), color = MaterialTheme.colors.primarySurface,border = BorderStroke(1.dp, MaterialTheme.colors.secondary),
+            shape = RoundedCornerShape(8.dp),
+            elevation = 8.dp) {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Box(Modifier.size(125.dp), contentAlignment = Alignment.Center) {
+                    AsyncImage(
+                        model = user.avatar_url,
+                        contentDescription = "Аватар",
+                        modifier = Modifier
+                            .size(100.dp).clip(CircleShape)
+                            .padding(5.dp),
+                        placeholder = painterResource(R.drawable.ic_person_24)
+                    )
+                    Text(
+                        text = "${user.followers}, ${user.following}",
+                        modifier.fillMaxSize(),
+                        textAlign = TextAlign.Right
+                    )
+                }
+                Text(text = user.name, style = MaterialTheme.typography.h5)
+                Text(text = user.bio, style=MaterialTheme.typography.body1)
+                Row(verticalAlignment=Alignment.CenterVertically) {
+                    Text(text = user.blog, style = MaterialTheme.typography.subtitle2, textAlign = TextAlign.Center)
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_baseline_launch_24),
+                        contentDescription = "Ссылка", modifier = Modifier.padding(4.dp)
+                    )
+                }
             }
         }
-
     }
 
     @Preview(showBackground = true)
@@ -122,6 +148,7 @@ class UserFragment :Fragment(R.layout.f_user){
                     avatar_url="https://i.playground.ru/i/pix/1484606/image.jpg"
                     followers=2
                     following=5
+                    blog="https://vedmak.fandom.com/wiki/Цирилла"
 
             })
         }

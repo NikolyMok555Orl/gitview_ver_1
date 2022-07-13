@@ -28,7 +28,8 @@ class Repository {
     var avatar_url=""
     var stargazers_count=0
 
-
+    //для преьвю
+    constructor(){}
 
     constructor(jsRepository: JsRepository){
         id=jsRepository.id

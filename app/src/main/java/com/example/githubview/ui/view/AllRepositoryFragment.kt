@@ -1,37 +1,38 @@
 package com.example.githubview.ui.view
 
-import android.content.ClipData
-import android.content.Context
+
+
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import coil.compose.AsyncImage
@@ -44,7 +45,8 @@ import com.example.githubview.ui.theme.AppTheme
 import com.example.githubview.ui.viewmodel.MainViewModel
 import com.example.githubview.ui.viewmodel.MainViewModelFactory
 import com.example.githubview.utils.Status
-import kotlinx.coroutines.CoroutineScope
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -129,6 +131,11 @@ open class AllRepositoryFragment : Fragment() {
     @Composable
     fun Items(repositories: List<Repository>,modifier: Modifier=Modifier){
         val lazyListState: LazyListState = rememberLazyListState()
+        val isRefreshing by mainViewModel.isRefreshing.collectAsState()
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
+            onRefresh = { mainViewModel.getRepositories() },
+        ) {
         LazyColumn(modifier = modifier, state = lazyListState) {
             items(items = repositories, key = { it.id }) { repository ->
                 StateItem(repository, modifier)
@@ -140,6 +147,7 @@ open class AllRepositoryFragment : Fragment() {
                     )
                 }
             }
+        }
         }
     }
 
@@ -159,9 +167,13 @@ open class AllRepositoryFragment : Fragment() {
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(modifier = modifier.fillMaxWidth()){
-                    AsyncImage(model = repository.avatar_url, contentDescription = "Аватар", modifier=Modifier.size(25.dp),
+                    AsyncImage(model = repository.avatar_url, contentDescription = "Аватар", modifier= Modifier.padding(5.dp).background(
+                        MaterialTheme.colors.primarySurface, RoundedCornerShape(percent = 10)
+                    )
+                        .size(50.dp).clip(RoundedCornerShape(percent = 10))
+                        ,
                         placeholder =painterResource(R.drawable.ic_person_24) )
-                    Text(text=repository.full_name)
+                    Text(text=repository.full_name, style = MaterialTheme.typography.h6)
                     Row(modifier = Modifier.fillMaxWidth(1f),
                         horizontalArrangement = Arrangement.End) {
                         Text(text = repository.stargazers_count.toString())
@@ -169,17 +181,23 @@ open class AllRepositoryFragment : Fragment() {
                             contentDescription = null)
                     }
                 }
-                Text(text=repository.description)
-                val composableScope = rememberCoroutineScope()
-                val mutableState = remember { mutableStateOf("") }
-                if(repository.languages.isEmpty()){
-                    composableScope.launch() {
-                        mutableState.value=repository.getLanguages()
+                Column(modifier = Modifier.padding(5.dp)) {
+                    Text(text = repository.description, modifier = Modifier.fillMaxWidth(),
+                        style = MaterialTheme.typography.body1, fontSize = 18.sp)
+                    val composableScope = rememberCoroutineScope()
+                    val languages = remember { mutableStateOf("") }
+                    if (repository.languages.isEmpty()) {
+                        composableScope.launch() {
+                            languages.value = repository.getLanguages()
+                        }
                     }
+                    Text(text = "${languages.value}", fontStyle = FontStyle.Italic)
                 }
-                Text(text = "ЯП ${mutableState.value}")
+                    Text(
+                        text = repository.updated_at, textAlign = TextAlign.End,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                Text(text=repository.updated_at)
             }
         }
     }
@@ -210,7 +228,14 @@ open class AllRepositoryFragment : Fragment() {
     @Composable
     fun PreviewItem(){
         AppTheme() {
-            //Item()
+            Item(Repository().apply {
+                full_name="Плотва Андроид"
+                description="Приложение для управление плотвой онлайн"
+                updated_at="2018-03-21T10:36:22Z"
+                avatar_url="https://avatars.githubusercontent.com/u/37593827?v=4"
+                stargazers_count=4
+                nameOwner="CamiloCano"
+            }, {})
         }
     }
 

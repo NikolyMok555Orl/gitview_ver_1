@@ -10,6 +10,9 @@ import com.example.githubview.data.model.Repositories
 import com.example.githubview.notifyObservers
 import com.example.githubview.utils.Resource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.lang.Math.ceil
 
@@ -21,6 +24,11 @@ open class MainViewModel(private val mainRepository: MainRepository) : ViewModel
             null
         )
     }
+
+    private val _isRefreshing = MutableStateFlow(false)
+
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
 
     val page: MutableLiveData<Int> = MutableLiveData(1)
 
@@ -42,6 +50,7 @@ open class MainViewModel(private val mainRepository: MainRepository) : ViewModel
 
     fun getRepositories(){
         viewModelScope.launch {
+            _isRefreshing.emit(true)
             repositorise.value= Resource.loading(data = null)
             try {
                 repositorise.value = Resource.success(data = mainRepository.getRepositories(q=query.value?:"", page=page.value?:1))
@@ -50,8 +59,11 @@ open class MainViewModel(private val mainRepository: MainRepository) : ViewModel
                 repositorise.value =
                     Resource.error(data = null, message = exception.message ?: "Ошибка")
             }
+            _isRefreshing.emit(false)
         }
     }
+
+
 
      /*fun getLanguages(id: Int){
          viewModelScope.launch {

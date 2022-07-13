@@ -2,8 +2,8 @@ package com.example.githubview.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Red200 = Color(0xfff297a2)
-val Red300 = Color(0xffea6d7e)
-val Red700 = Color(0xffdd0d3c)
-val Red800 = Color(0xffd00036)
-val Red900 = Color(0xffc20029)
+val Blue200 = Color(0xFF4A8DF1)
+val Blue300 = Color(0xFF3682F3)
+val Blue700 = Color(0xFF276FDB)
+val Blue800 = Color(0xFF1451AC)
+val Blue900 = Color(0xFF063986)
