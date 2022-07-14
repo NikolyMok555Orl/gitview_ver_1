@@ -178,7 +178,7 @@ open class AllRepositoryFragment : Fragment() {
                         horizontalArrangement = Arrangement.End) {
                         Text(text = repository.stargazers_count.toString())
                         Icon(imageVector = ImageVector.vectorResource(R.drawable.ic_baseline_star_24),
-                            contentDescription = null)
+                            contentDescription = null, tint=MaterialTheme.colors.primary)
                     }
                 }
                 Column(modifier = Modifier.padding(5.dp)) {
