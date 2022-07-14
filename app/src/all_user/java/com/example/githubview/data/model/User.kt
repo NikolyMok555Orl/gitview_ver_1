@@ -17,8 +17,8 @@ class User {
     constructor(jsUser: JsUser){
         id=jsUser.id
         name=jsUser.login
-        bio=jsUser.avatar_url
-        blog=jsUser.blog
+        bio=jsUser.bio?:""
+        blog=jsUser.blog?:""
         followers=jsUser.followers
         following=jsUser.following
         avatar_url=jsUser.avatar_url
