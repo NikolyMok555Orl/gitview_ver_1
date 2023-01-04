@@ -34,7 +34,7 @@ interface Api {
 
 
     companion object {
-        private const val token="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@"
+        private const val token="Ваш токен"
         private const val URL = "https://api.github.com/"
 
         private var api: Api? = null
